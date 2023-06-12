@@ -1,4 +1,4 @@
-﻿using UserHub.Api.Modals;
+﻿using UserHub.Api.Domain;
 using UserHub.Api.Services.Users;
 
 namespace UserHub.Api.Contracts.Users

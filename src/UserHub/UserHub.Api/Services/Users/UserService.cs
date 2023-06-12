@@ -1,6 +1,6 @@
 ﻿using UserHub.Api.Contracts.Users;
 using UserHub.Api.Data.Users;
-using UserHub.Api.Modals;
+using UserHub.Api.Domain;
 
 namespace UserHub.Api.Services.Users
 {

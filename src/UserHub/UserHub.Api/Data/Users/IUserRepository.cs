@@ -1,4 +1,4 @@
-﻿using UserHub.Api.Modals;
+﻿using UserHub.Api.Domain;
 
 namespace UserHub.Api.Data.Users
 {
