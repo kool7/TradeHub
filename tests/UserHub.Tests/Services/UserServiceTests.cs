@@ -1,59 +1,53 @@
+using AutoFixture;
 using Moq;
+using UserHub.Api.Contracts.Users;
+using UserHub.Api.Controllers;
 using UserHub.Api.Data.Users;
 using UserHub.Api.Domain;
 using UserHub.Api.Services.Users;
 
 namespace UserHub.Tests.Services;
 
-public class UserTests
+public class UserServiceTests
 {
+    private readonly Fixture _fixture;
+    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly UserService _sutUserService;
+    
+    public UserServiceTests()
+    {
+        _fixture = new Fixture();
+        _mockUserRepository = new Mock<IUserRepository>();
+        _sutUserService = new UserService(_mockUserRepository.Object);
+    }
+
     [Fact]
-    public void RegisterUser_UserCreated_ReturnsTrue()
+    public void CreateUser_UserCreated_ReturnsUser()
     {
         // Arrange
-        var mockUserRepository = new Mock<IUserRepository>();
-        mockUserRepository
+        _mockUserRepository
             .Setup(repo => repo.CreateUser(It.IsAny<User>()))
             .Returns(true);
-        var sutUserService = new UserService(mockUserRepository.Object);
 
-        var newUser = new User()
-        {
-            Id = Guid.NewGuid(),
-            FirstName = "John",
-            LastName = "Doe",
-            Email = "johndoe@example.com",
-            Password = "password"
-        };
+        var newUser = _fixture.Create<User>();
 
         // Act
-        var result = sutUserService.RegisterUser(newUser);
+        var result = _sutUserService.CreateUser(newUser);
 
         // Assert
-        Assert.True(result.Success);
+        Assert.Equal(newUser, result);
     }
 
     [Fact]
-    public void RegisterUser_OnSuccess_InvokesUserService()
+    public void CreateUser_OnSuccess_InvokesUserService()
     {
         // Arrange
-        var mockUserRepository = new Mock<IUserRepository>();
-        var sutUserService = new UserService(mockUserRepository.Object);
-        var newUser = new User()
-        {
-            Id = Guid.NewGuid(),
-            FirstName = "John",
-            LastName = "Doe",
-            Email = "johndoe@example.com",
-            Password = "password"
-        };
+        var newUser = _fixture.Create<User>();
 
         // Act
-        sutUserService.RegisterUser(newUser);
+        _sutUserService.CreateUser(newUser);
 
         // Assert
-        mockUserRepository.Verify(services => services.CreateUser(newUser), Times.Once());
+        _mockUserRepository.Verify(services => services.CreateUser(newUser), Times.Once());
     }
-
-
 }

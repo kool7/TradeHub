@@ -5,7 +5,8 @@ namespace UserHub.Api.Contracts.Users
 {
     public interface IUserService
     {
-        RegistrationResult RegisterUser(User newUser);
+        User CreateUser(User newUser);
         List<User> GetAllUsers();
+        User GetUserById(Guid id);
     }
 }

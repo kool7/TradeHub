@@ -19,9 +19,20 @@ public class UserController : ControllerBase
         _userService = userService;
     }
 
-    public ActionResult<IList<User>> GetUsers()
+    public ActionResult<List<User>> GetUsers()
     {
         var users = _userService.GetAllUsers();
         return Ok(users);
+    }
+
+    [HttpGet("{Id}", Name = "GetUserById")]
+    public ActionResult<User> GetUserById(Guid Id)
+    {
+        var user = _userService.GetUserById(Id);
+
+        if (user == null)
+            return NotFound();
+
+        return Ok(user);
     }
 }

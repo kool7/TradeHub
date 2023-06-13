@@ -17,9 +17,29 @@ namespace UserHub.Api.Data.Users
             return false;
         }
 
+        public bool DeleteUser(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<User> GetAll()
         {
             return _users;
+        }
+
+        public User GetUser(Guid id)
+        {
+            return _users.FirstOrDefault(user => user.Id == id)!;
+        }
+
+        public bool SaveChanges()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool UpdateUser(User user)
+        {
+            throw new NotImplementedException();
         }
     }
 }

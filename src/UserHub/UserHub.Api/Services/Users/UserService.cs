@@ -18,14 +18,20 @@ namespace UserHub.Api.Services.Users
             return _userRepository.GetAll();
         }
 
-        public RegistrationResult RegisterUser(User newUser)
+        public User CreateUser(User newUser)
         {
             if (_userRepository.CreateUser(newUser))
             {
-                return new RegistrationResult { Success = true };
+                return newUser;
             };
 
-            return new RegistrationResult { Success = false };
+            return newUser;
+        }
+
+        public User GetUserById(Guid Id)
+        {
+            var user = _userRepository.GetUser(Id);
+            return user;
         }
     }
 

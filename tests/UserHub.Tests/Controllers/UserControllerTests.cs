@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoFixture;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using UserHub.Api.Contracts.Users;
@@ -9,43 +10,72 @@ namespace UserHub.Tests.Controllers
 {
     public class UserControllerTests
     {
+        private readonly Fixture _fixture;
+        private readonly Mock<ILogger<UserController>> _mockLogger;
+        private readonly Mock<IUserService> _mockUserService;
+        private readonly UserController _userController;
+
+        public UserControllerTests()
+        {
+            _fixture = new Fixture();
+            _mockLogger = new Mock<ILogger<UserController>>();
+            _mockUserService = new Mock<IUserService>();
+            _userController = new UserController(_mockLogger.Object, _mockUserService.Object);
+        }
+
         [Fact]
-        public async Task GetUsers_ReturnsListOfUsers()
+        public async Task GetUsers_ListOfUsers_ReturnsOkStatus()
         {
             // Arrange
-            var mockUserService = new Mock<IUserService>();
-            var mockLogger = new Mock<ILogger<UserController>>();
-            var userList = new List<User>
-            {
-                new User() 
-                {
-                    Id = Guid.NewGuid(),
-                    FirstName = "John",
-                    LastName = "Doe",
-                    Email = "johndoe@example.com",
-                    Password = "password"
-                },
-                new User()
-                {
-                    Id = Guid.NewGuid(),
-                    FirstName = "John",
-                    LastName = "Smith",
-                    Email = "johnsmith@example.com",
-                    Password = "password"
-                },
-            };
-            mockUserService.Setup(service => service.GetAllUsers())
-                .Returns(userList);
-            var controller = new UserController(mockLogger.Object,
-                mockUserService.Object);
+            var expectedUsers = _fixture.Create<List<User>>();
+            _mockUserService.Setup(service => service.GetAllUsers())
+                .Returns(expectedUsers);
 
             // Act
-            var result = controller.GetUsers();
+            var result = _userController.GetUsers();
 
             // Assert
             var okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
-            var model = Assert.IsAssignableFrom<IList<User>>(okObjectResult.Value);
-            Assert.Equal(userList.Count, model.Count);
+            var users = Assert.IsAssignableFrom<List<User>>(okObjectResult.Value);
+            Assert.Equal(expectedUsers.Count, users.Count);
+            Assert.Equal(expectedUsers, users);
         }
+
+        [Fact]
+        public async Task GetUsers_WhenNoUsersFound_ReturnsEmptyList()
+        {
+            // Arrange
+            var emptyUsers = new List<User>();
+            _mockUserService.Setup(service => service.GetAllUsers())
+                .Returns(emptyUsers);
+
+            // Act
+            var result = _userController.GetUsers();
+
+            // Assert
+            var okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
+            var users = Assert.IsType<List<User>>(okObjectResult.Value);
+            Assert.Empty(users);
+        }
+
+        [Fact]
+        public async Task GetUserById_ExistingUserId_ReturnsUserOkStatus()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var user = _fixture.Create<User>();
+            _mockUserService
+                .Setup(service => service.GetUserById(userId))
+                .Returns(user);
+
+            // Act
+            var result = _userController.GetUserById(userId);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result.Result);
+            var returnedUser = Assert.IsAssignableFrom<User>(okResult.Value);
+            Assert.Equal(user.Id, returnedUser.Id);
+        }
+
     }
 }
