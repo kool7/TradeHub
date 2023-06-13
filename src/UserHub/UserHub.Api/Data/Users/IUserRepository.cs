@@ -4,6 +4,7 @@ namespace UserHub.Api.Data.Users
 {
     public interface IUserRepository
     {
-        void AddUser(User user);
+        bool CreateUser(User user);
+        List<User> GetAll();
     }
 }

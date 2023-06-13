@@ -8,11 +8,15 @@ namespace UserHub.Tests.Services;
 public class UserTests
 {
     [Fact]
-    public void RegisterUser_ValidUser_ReturnsSuccess()
+    public void RegisterUser_UserCreated_ReturnsTrue()
     {
         // Arrange
-        var userRepository = new Mock<IUserRepository>();
-        var userService = new UserService(userRepository.Object);
+        var mockUserRepository = new Mock<IUserRepository>();
+        mockUserRepository
+            .Setup(repo => repo.CreateUser(It.IsAny<User>()))
+            .Returns(true);
+        var sutUserService = new UserService(mockUserRepository.Object);
+
         var newUser = new User()
         {
             Id = Guid.NewGuid(),
@@ -23,18 +27,18 @@ public class UserTests
         };
 
         // Act
-        var result = userService.RegisterUser(newUser);
+        var result = sutUserService.RegisterUser(newUser);
 
         // Assert
         Assert.True(result.Success);
     }
 
     [Fact]
-    public void Get_OnSuccess_InvokesUsersService()
+    public void RegisterUser_OnSuccess_InvokesUserService()
     {
         // Arrange
-        var mockUserService = new Mock<IUserRepository>();
-        var sut = new UserService(mockUserService.Object);
+        var mockUserRepository = new Mock<IUserRepository>();
+        var sutUserService = new UserService(mockUserRepository.Object);
         var newUser = new User()
         {
             Id = Guid.NewGuid(),
@@ -45,10 +49,10 @@ public class UserTests
         };
 
         // Act
-        sut.RegisterUser(newUser);
+        sutUserService.RegisterUser(newUser);
 
         // Assert
-        mockUserService.Verify(services => services.AddUser(newUser), Times.Once());
+        mockUserRepository.Verify(services => services.CreateUser(newUser), Times.Once());
     }
 
 

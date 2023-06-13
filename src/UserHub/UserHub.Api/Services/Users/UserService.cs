@@ -13,10 +13,19 @@ namespace UserHub.Api.Services.Users
             _userRepository = userRepository;
         }
 
+        public List<User> GetAllUsers()
+        {
+            return _userRepository.GetAll();
+        }
+
         public RegistrationResult RegisterUser(User newUser)
         {
-            _userRepository.AddUser(newUser);
-            return new RegistrationResult { Success = true };
+            if (_userRepository.CreateUser(newUser))
+            {
+                return new RegistrationResult { Success = true };
+            };
+
+            return new RegistrationResult { Success = false };
         }
     }
 

@@ -6,5 +6,6 @@ namespace UserHub.Api.Contracts.Users
     public interface IUserService
     {
         RegistrationResult RegisterUser(User newUser);
+        List<User> GetAllUsers();
     }
 }
