@@ -13,25 +13,19 @@ namespace UserHub.Api.Services.Users
             _userRepository = userRepository;
         }
 
-        public List<User> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return _userRepository.GetAll();
+            return await _userRepository.GetAll();
         }
 
-        public User CreateUser(User newUser)
+        public async Task<bool> CreateUser(User newUser)
         {
-            if (_userRepository.CreateUser(newUser))
-            {
-                return newUser;
-            };
-
-            return newUser;
+            return await _userRepository.CreateUser(newUser);
         }
 
-        public User GetUserById(Guid Id)
+        public async Task<User> GetUserById(Guid Id)
         {
-            var user = _userRepository.GetUser(Id);
-            return user;
+            return await _userRepository.GetUser(Id);
         }
     }
 

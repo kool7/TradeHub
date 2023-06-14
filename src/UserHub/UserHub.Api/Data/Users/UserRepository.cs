@@ -4,17 +4,18 @@ namespace UserHub.Api.Data.Users
 {
     public class UserRepository : IUserRepository
     {
-        private readonly List<User> _users = new();
+        private static List<User> _users = new();
 
-        public bool CreateUser(User user)
+        public Task<bool> CreateUser(User user)
         {
             if (user != null)
             {
+                user.Id = Guid.NewGuid();
                 _users.Add(user);
-                return true;
+                return Task.FromResult(true);
             }
 
-            return false;
+            return Task.FromResult(false);
         }
 
         public bool DeleteUser(Guid id)
@@ -22,24 +23,14 @@ namespace UserHub.Api.Data.Users
             throw new NotImplementedException();
         }
 
-        public List<User> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return _users;
+            return await Task.FromResult(_users);
         }
 
-        public User GetUser(Guid id)
+        public async Task<User> GetUser(Guid id)
         {
-            return _users.FirstOrDefault(user => user.Id == id)!;
-        }
-
-        public bool SaveChanges()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool UpdateUser(User user)
-        {
-            throw new NotImplementedException();
+            return await Task.FromResult(_users.FirstOrDefault(user => user.Id == id)!);
         }
     }
 }

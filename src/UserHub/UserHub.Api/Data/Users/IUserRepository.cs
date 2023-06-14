@@ -4,11 +4,9 @@ namespace UserHub.Api.Data.Users
 {
     public interface IUserRepository
     {
-        bool CreateUser(User user);
-        User GetUser(Guid id);
-        bool UpdateUser(User user);
+        Task<IEnumerable<User>> GetAll();
+        Task<User> GetUser(Guid id);
+        Task<bool> CreateUser(User user);
         bool DeleteUser(Guid id);
-        List<User> GetAll();
-        bool SaveChanges();
     }
 }
