@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using System.Net;
 using UserHub.Api.Contracts.Users;
 using UserHub.Api.Controllers;
 using UserHub.Api.Domain;
@@ -36,10 +37,9 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.GetUsersAsync();
 
             // Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
-            var users = Assert.IsAssignableFrom<IEnumerable<User>>(okObjectResult.Value);
-            Assert.Equal(expectedUsers.Count(), users.Count());
-            Assert.Equal(expectedUsers, users);
+            result.Should().NotBeNull();
+            result.Value?.Count().Should().Be(expectedUsers.Count());
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -54,9 +54,9 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.GetUsersAsync();
 
             // Assert
-            var okObjectResult = Assert.IsType<OkObjectResult>(result.Result);
-            var users = Assert.IsAssignableFrom<IEnumerable<User>>(okObjectResult.Value);
-            Assert.Empty(users);
+            result.Value.Should().BeNullOrEmpty();
+            result.Value?.Count().Should().Be(0);
+            result.Result.Should().BeOfType<OkObjectResult>();
         }
 
         [Fact]
@@ -73,9 +73,8 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.GetUserByIdAsync(userId);
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnedUser = Assert.IsAssignableFrom<User>(okResult.Value);
-            Assert.Equal(user.Id, returnedUser.Id);
+            result.Result.Should().BeOfType<OkObjectResult>();
+            result.Value?.Id.Should().Be(user.Id);
         }
 
         [Fact]
@@ -92,7 +91,7 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.GetUserByIdAsync(userId);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result.Result);
+            result.Result.Should().BeOfType<NotFoundResult>();
         }
 
         [Fact]
@@ -108,12 +107,13 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.CreateUserAsync(user);
 
             // Assert
-            Assert.IsType<CreatedAtRouteResult>(result.Result);
+            result.Result.Should().BeOfType<CreatedAtRouteResult>();
+            result.Value?.Should().BeEquivalentTo(user);
 
-            var createdAtRouteResult = (CreatedAtRouteResult)result.Result;
-
-            Assert.Equal("GetUserByIdAsync", createdAtRouteResult.RouteName);
-            Assert.Equal(user.Id, createdAtRouteResult.RouteValues!["Id"]);
+            var createdAtRouteResult = (CreatedAtRouteResult)result.Result!;
+            createdAtRouteResult?.StatusCode.Should().Be(201);
+            createdAtRouteResult?.RouteName.Should().BeEquivalentTo("GetUserByIdAsync");
+            createdAtRouteResult?.RouteValues!["Id"].Should().BeEquivalentTo(user.Id);
         }
 
         [Fact]
@@ -131,9 +131,9 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.UpdateUserAsync(userId, userToUpdate);
 
             // Assert
-            Assert.IsType<NoContentResult>(result);
-            Assert.Equal(userToUpdate.FirstName, existingUser.FirstName);
-            Assert.Equal(userToUpdate.LastName, existingUser.LastName);
+            result.Should().BeOfType<NoContentResult>();
+            userToUpdate.FirstName.Should().BeEquivalentTo(existingUser.FirstName);
+            userToUpdate.LastName.Should().BeEquivalentTo(existingUser.LastName);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace UserHub.Tests.Controllers
             var result = await _sutuserController.UpdateUserAsync(userId, userToUpdate);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            result.Should().BeOfType<NotFoundResult>();
         }
 
         [Fact]
