@@ -27,6 +27,11 @@ namespace UserHub.Api.Services.Users
         {
             return await _userRepository.GetUser(Id);
         }
+
+        public bool RemoveUser(User user)
+        {
+            return _userRepository.DeleteUser(user);
+        }
     }
 
     public class RegistrationResult

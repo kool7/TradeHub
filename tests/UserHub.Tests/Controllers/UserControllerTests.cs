@@ -1,4 +1,5 @@
 ﻿using AutoFixture;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -147,6 +148,23 @@ namespace UserHub.Tests.Controllers
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task DeleteUserAsync_ValidUserId_RemovesUser()
+        {
+            // Arrange
+            var userToDelete = _fixture.Create<User>();
+            _mockUserService
+                .Setup(service => service.GetUserById(userToDelete.Id))
+                .ReturnsAsync(userToDelete);
+
+            // Act
+            var result = await _sutuserController.DeleteUserAsync(userToDelete.Id);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            _mockUserService.Verify(service => service.RemoveUser(userToDelete), Times.Once);
         }
     }
 }

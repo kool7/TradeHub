@@ -1,10 +1,21 @@
-﻿using UserHub.Api.Domain;
+﻿using UserHub.Api.Contracts.Users;
+using UserHub.Api.Domain;
 
 namespace UserHub.Api.Data.Users
 {
     public class UserRepository : IUserRepository
     {
         private static List<User> _users = new();
+
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            return await Task.FromResult(_users);
+        }
+
+        public async Task<User> GetUser(Guid id)
+        {
+            return await Task.FromResult(_users.FirstOrDefault(user => user.Id == id)!);
+        }
 
         public Task<bool> CreateUser(User user)
         {
@@ -18,19 +29,9 @@ namespace UserHub.Api.Data.Users
             return Task.FromResult(false);
         }
 
-        public bool DeleteUser(Guid id)
+        public bool DeleteUser(User user)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<User>> GetAll()
-        {
-            return await Task.FromResult(_users);
-        }
-
-        public async Task<User> GetUser(Guid id)
-        {
-            return await Task.FromResult(_users.FirstOrDefault(user => user.Id == id)!);
+            return _users.Remove(user);
         }
     }
 }

@@ -58,5 +58,19 @@ public class UserController : ControllerBase
         user.LastName = updateUserDto.LastName;
 
         return NoContent();
-    } 
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteUserAsync(Guid id)
+    {
+        var user = await _userService.GetUserById(id);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        _userService.RemoveUser(user);
+        return NoContent();
+    }
 }

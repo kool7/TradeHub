@@ -1,4 +1,5 @@
-﻿using UserHub.Api.Domain;
+﻿using UserHub.Api.Contracts.Users;
+using UserHub.Api.Domain;
 
 namespace UserHub.Api.Data.Users
 {
@@ -7,6 +8,6 @@ namespace UserHub.Api.Data.Users
         Task<IEnumerable<User>> GetAll();
         Task<User> GetUser(Guid id);
         Task<bool> CreateUser(User user);
-        bool DeleteUser(Guid id);
+        bool DeleteUser(User user);
     }
 }

@@ -8,5 +8,6 @@ namespace UserHub.Api.Contracts.Users
         Task<bool> CreateUser(User newUser);
         Task<IEnumerable<User>> GetAllUsers();
         Task<User> GetUserById(Guid id);
+        bool RemoveUser(User user);
     }
 }
