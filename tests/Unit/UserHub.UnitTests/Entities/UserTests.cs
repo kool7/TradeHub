@@ -1,7 +1,7 @@
 using FluentAssertions;
 using UserHub.Api.Domain;
 
-namespace UserHub.Tests.Entities;
+namespace UserHub.UnitTests.Entities;
 
 public class UserTests
 {

@@ -3,7 +3,7 @@ using FluentAssertions;
 using UserHub.Api.Data.Users;
 using UserHub.Api.Domain;
 
-namespace UserHub.Tests.Repositories
+namespace UserHub.UnitTests.Repositories
 {
     public class UserRepositoryTests
     {
@@ -39,7 +39,7 @@ namespace UserHub.Tests.Repositories
             // Arrange
             var user = _fixture.Create<User>();
             await _userRepository.CreateUser(user);
-            
+
             // Act
             var result = await _userRepository.GetUser(user.Id);
 

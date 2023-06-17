@@ -3,12 +3,11 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Net;
 using UserHub.Api.Contracts.Users;
 using UserHub.Api.Controllers;
 using UserHub.Api.Domain;
 
-namespace UserHub.Tests.Controllers
+namespace UserHub.UnitTests.Controllers
 {
     public class UserControllerTests
     {

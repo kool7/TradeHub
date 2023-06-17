@@ -5,7 +5,7 @@ using UserHub.Api.Data.Users;
 using UserHub.Api.Domain;
 using UserHub.Api.Services.Users;
 
-namespace UserHub.Tests.Services;
+namespace UserHub.UnitTests.Services;
 
 public class UserServiceTests
 {
