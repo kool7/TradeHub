@@ -1,4 +1,4 @@
-﻿using UserHub.Api.Contracts.Users;
+﻿using Microsoft.EntityFrameworkCore;
 using UserHub.Api.Domain;
 
 namespace UserHub.Api.Data.Users
@@ -6,9 +6,16 @@ namespace UserHub.Api.Data.Users
     public class UserRepository : IUserRepository
     {
         private static List<User> _users = new();
+        private readonly UserHubDbContext _userHubDbContext;
+
+        public UserRepository(UserHubDbContext userHubDbContext)
+        {
+            _userHubDbContext = userHubDbContext;
+        }
 
         public async Task<IEnumerable<User>> GetAll()
         {
+            //return await _userHubDbContext.Users.ToListAsync();
             return await Task.FromResult(_users);
         }
 
