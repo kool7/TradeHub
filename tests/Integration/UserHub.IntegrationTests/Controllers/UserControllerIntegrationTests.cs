@@ -38,27 +38,12 @@ public class UserControllerIntegrationTests
         _fixture = new Fixture();
 
         using var scope = _appFactory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<UserHubDbContext>();
-        TestDbConfiguration.InitializeDbForTests(dbContext);
+        _dbContext = scope.ServiceProvider.GetRequiredService<UserHubDbContext>();
+        TestDbConfiguration.InitializeDbForTests(_dbContext);
     }
 
     [Fact]
-    public async Task GetUsersAsync_EmptyListsOfUsers_EndpointReturnsSuccessStatus()
-    {
-        // Act
-        var response = await _httpClient.GetAsync("https://localhost:44321/api/user");
-
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.Headers.ContentType?
-            .ToString()
-            .Should()
-            .BeEquivalentTo("application/json; charset=utf-8");
-        response.Content.ReadFromJsonAsync<IEnumerable<User>>().Should().NotBeNull();
-    }
-
-    [Fact]
-    public async Task GetUsersAsync_ListsOfUsers_EndpointReturnsSuccessStatus()
+    public async Task GetUsersAsync_Valid_EndpointReturnsSuccessStatus()
     {
         // Act
         var response = await _httpClient.GetAsync("https://localhost:44321/api/user");
@@ -76,20 +61,29 @@ public class UserControllerIntegrationTests
     public async Task GetUserByIdAsync_ValidUserId_EndpointReturnsUser()
     {
         // Arrange
-        var user = _fixture.Create<User>();
-        HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(user),
-            Encoding.UTF8,
-            "application/json");
-        var newUser = await _httpClient.PostAsync("https://localhost:44321/api/user", httpContent);
-        var newUserwithId = await newUser.Content.ReadFromJsonAsync<User>();
-        var Id = newUserwithId?.Id;
+        var userId = new Guid("C9BD8871-F5B1-409F-53AE-08DB70BA51EF");
 
         // Act
-        var response = await _httpClient.GetAsync($"https://localhost:44321/api/user/{Id}");
+        var response = await _httpClient.GetAsync($"https://localhost:44321/api/user/{userId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Content.ReadFromJsonAsync<User>().Should().NotBeNull();
+
+        var user = await response.Content.ReadFromJsonAsync<User>();
+        user?.Id.Should().Be(userId);
+    }
+
+    [Fact]
+    public async Task GetUserByIdAsync_InValidUserId_EndpointReturnsNotFound()
+    {
+        // Arrange
+        var userId = new Guid("C9BD8871-F5B1-409F-53AE-08DB70BA41EF");
+
+        // Act
+        var response = await _httpClient.GetAsync($"https://localhost:44321/api/user/{userId}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -105,40 +99,51 @@ public class UserControllerIntegrationTests
         var response = await _httpClient.PostAsync("https://localhost:44321/api/user", httpContent);
 
         // Assert
+        var result = await response.Content.ReadFromJsonAsync<User>();
+
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         response.Content.Headers.ContentType?
             .ToString()
             .Should()
             .BeEquivalentTo("application/json; charset=utf-8");
-        response.Content.ReadFromJsonAsync<User>().Should().NotBeNull();
+        result.Should().BeEquivalentTo(user);
     }
 
     [Fact]
     public async Task UpdateUserAsync_UpdatesUser_EndpointReturnsNoContent()
     {
         // Arrange
-        var user = _fixture.Create<User>();
-        HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(user),
-            Encoding.UTF8,
-            "application/json");
-        var userToUpdate = await _httpClient.PostAsync("https://localhost:44321/api/user", httpContent);
-        var userToUpdateId = await userToUpdate.Content.ReadFromJsonAsync<User>();
-        var Id = userToUpdateId?.Id;
-
-        var updatedUser = _fixture.Create<UpdateUserDto>();
-        HttpContent httpContentupdatedUser = new StringContent(JsonConvert.SerializeObject(updatedUser),
+        var userId = new Guid("C9BD8871-F5B1-409F-53AE-08DB70BA51EF");
+        var userToUpdate = _fixture.Create<UpdateUserDto>();
+        HttpContent httpContentupdatedUser = new StringContent(JsonConvert.SerializeObject(userToUpdate),
             Encoding.UTF8,
             "application/json");
 
         // Act
-        var response = await _httpClient.PutAsync($"https://localhost:44321/api/user/{Id}", httpContentupdatedUser);
+        var response = await _httpClient.PutAsync($"https://localhost:44321/api/user/{userId}", httpContentupdatedUser);
 
         // Assert
-        var getUserResponse = await _httpClient.GetAsync($"https://localhost:44321/api/user/{Id}");
-        getUserResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var getUserResponse = await _httpClient.GetAsync($"https://localhost:44321/api/user/{userId}");
         var userUpdated = await getUserResponse.Content.ReadFromJsonAsync<User>();
+
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        userUpdated?.FirstName.Should().Be(user.FirstName);
-        userUpdated?.LastName.Should().Be(user.LastName);
+        userUpdated?.FirstName.Should().Be(userToUpdate.FirstName);
+        userUpdated?.LastName.Should().Be(userToUpdate.LastName);
+    }
+
+    [Fact]
+    public async Task DeleteUserAsync_RemovesUser_EndpointReturnsNoContent()
+    {
+        // Arrange
+        var userId = new Guid("2AB641F6-97F5-403C-B8D8-08DB70C6DD75");
+
+        // Act
+        var response = await _httpClient.DeleteAsync($"https://localhost:44321/api/user/?id={userId}");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var getUserResponse = await _httpClient.GetAsync($"https://localhost:44321/api/user/{userId}");
+        getUserResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

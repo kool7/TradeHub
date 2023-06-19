@@ -60,6 +60,7 @@ public class UserController : ControllerBase
 
         user.FirstName = updateUserDto.FirstName;
         user.LastName = updateUserDto.LastName;
+        await _userRepository.SaveChangesAsync();
 
         return NoContent();
     }
@@ -67,14 +68,15 @@ public class UserController : ControllerBase
     [HttpDelete]
     public async Task<ActionResult> DeleteUserAsync(Guid id)
     {
-        var user = await _userService.GetUserById(id);
+        var user = await _userRepository.GetUser(id);
 
         if (user == null)
         {
             return NotFound();
         }
 
-        _userService.RemoveUser(user);
+        _userRepository.DeleteUser(user);
+        await _userRepository.SaveChangesAsync();
         return NoContent();
     }
 }

@@ -40,5 +40,10 @@ namespace UserHub.Api.Data.Users
         {
             return _users.Remove(user);
         }
+
+        public Task SaveChangesAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
