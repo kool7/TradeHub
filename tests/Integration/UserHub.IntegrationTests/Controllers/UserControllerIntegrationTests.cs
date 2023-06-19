@@ -138,7 +138,7 @@ public class UserControllerIntegrationTests
         var userId = new Guid("2AB641F6-97F5-403C-B8D8-08DB70C6DD75");
 
         // Act
-        var response = await _httpClient.DeleteAsync($"https://localhost:44321/api/user/?id={userId}");
+        var response = await _httpClient.DeleteAsync($"https://localhost:44321/api/user/{userId}");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);

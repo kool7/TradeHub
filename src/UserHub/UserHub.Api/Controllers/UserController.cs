@@ -65,7 +65,7 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete]
+    [HttpDelete("{Id}")]
     public async Task<ActionResult> DeleteUserAsync(Guid id)
     {
         var user = await _userRepository.GetUser(id);
