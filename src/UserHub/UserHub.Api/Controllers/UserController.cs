@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUserAsync(User user) 
+    public async Task<ActionResult<User>> CreateUserAsync([FromBody] User user) 
     {
         await _userRepository.CreateUser(user);
         return CreatedAtRoute(nameof(GetUserByIdAsync), new { Id = user.Id }, user);
