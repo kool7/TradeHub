@@ -1,5 +1,8 @@
 ﻿using AutoFixture;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using UserHub.Api.Data;
 using UserHub.Api.Data.Users;
 using UserHub.Api.Domain;
 
@@ -8,12 +11,18 @@ namespace UserHub.UnitTests.Repositories
     public class UserRepositoryTests
     {
         private readonly Fixture _fixture;
+        private readonly Mock<UserHubDbContext> _userHubDbContext;
         private readonly UserRepository _userRepository;
 
         public UserRepositoryTests()
         {
+            var dbContextOptions = new DbContextOptionsBuilder<UserHubDbContext>()
+                .UseSqlServer("UserHubTestDb")
+                .Options;
+
             _fixture = new Fixture();
-            _userRepository = new UserRepository();
+            _userHubDbContext = new Mock<UserHubDbContext>(dbContextOptions);
+            _userRepository = new UserRepository(_userHubDbContext.Object);
         }
 
         [Fact]

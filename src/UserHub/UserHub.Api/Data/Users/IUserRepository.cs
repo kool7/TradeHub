@@ -9,5 +9,6 @@ namespace UserHub.Api.Data.Users
         Task<User> GetUser(Guid id);
         Task<bool> CreateUser(User user);
         bool DeleteUser(User user);
+        Task SaveChangesAsync();
     }
 }
