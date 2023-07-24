@@ -5,9 +5,9 @@ namespace UserHub.Api.Contracts.Users
 {
     public interface IUserService
     {
-        Task<bool> CreateUser(User newUser);
+        Task<User> CreateUser(User newUser);
         Task<IEnumerable<User>> GetAllUsers();
         Task<User> GetUserById(Guid id);
-        bool RemoveUser(User user);
+        Task RemoveUser(User user);
     }
 }

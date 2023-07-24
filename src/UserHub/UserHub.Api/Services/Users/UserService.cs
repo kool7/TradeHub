@@ -18,7 +18,7 @@ namespace UserHub.Api.Services.Users
             return await _userRepository.GetAll();
         }
 
-        public async Task<bool> CreateUser(User newUser)
+        public async Task<User> CreateUser(User newUser)
         {
             return await _userRepository.CreateUser(newUser);
         }
@@ -28,9 +28,9 @@ namespace UserHub.Api.Services.Users
             return await _userRepository.GetUser(Id);
         }
 
-        public bool RemoveUser(User user)
+        public async Task RemoveUser(User user)
         {
-            return _userRepository.DeleteUser(user);
+            await _userRepository.DeleteUser(user);
         }
     }
 

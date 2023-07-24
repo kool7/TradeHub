@@ -42,8 +42,8 @@ public class MockUserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> CreateUserAsync(User user) 
     {
-        await _userService.CreateUser(user);
-        return CreatedAtRoute(nameof(GetMockUserByIdAsync), new { Id = user.Id }, user);
+        var result = await _userService.CreateUser(user);
+        return CreatedAtRoute(nameof(GetMockUserByIdAsync), new { Id = result.Id }, result);
     }
 
     [HttpPut("{Id}")]

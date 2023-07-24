@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using UserHub.Api.Domain;
+﻿using UserHub.Api.Domain;
 
 namespace UserHub.Api.Data.Users
 {
@@ -24,21 +23,20 @@ namespace UserHub.Api.Data.Users
             return await Task.FromResult(_users.FirstOrDefault(user => user.Id == id)!);
         }
 
-        public Task<bool> CreateUser(User user)
+        public async Task<User?> CreateUser(User user)
         {
             if (user != null)
             {
                 user.Id = Guid.NewGuid();
                 _users.Add(user);
-                return Task.FromResult(true);
             }
 
-            return Task.FromResult(false);
+            return await Task.FromResult(user);
         }
 
-        public bool DeleteUser(User user)
+        public async Task DeleteUser(User user)
         {
-            return _users.Remove(user);
+            await Task.FromResult(_users.Remove(user));
         }
 
         public Task SaveChangesAsync()

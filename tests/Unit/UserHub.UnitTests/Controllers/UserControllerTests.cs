@@ -100,7 +100,7 @@ namespace UserHub.UnitTests.Controllers
             var user = _fixture.Create<User>();
             _mockUserService
                 .Setup(service => service.CreateUser(user))
-                .ReturnsAsync(true);
+                .ReturnsAsync(user);
 
             // Act
             var result = await _sutuserController.CreateUserAsync(user);

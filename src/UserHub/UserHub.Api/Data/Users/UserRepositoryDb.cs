@@ -12,19 +12,19 @@ namespace UserHub.Api.Data.Users
             _userHubDbContext = userHubDbContext;
         }
 
-        public async Task<bool> CreateUser(User user)
+        public async Task<User> CreateUser(User user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             await _userHubDbContext.AddAsync(user);
             await SaveChangesAsync();
-            return true;
+            return user;
         }
 
-        public bool DeleteUser(User user)
+        public async Task DeleteUser(User user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
             _userHubDbContext.Remove(user);
-            return true;
+            await SaveChangesAsync();
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -32,7 +32,7 @@ namespace UserHub.Api.Data.Users
             return await _userHubDbContext.Users.ToListAsync();
         }
 
-        public async Task<User> GetUser(Guid id)
+        public async Task<User?> GetUser(Guid id)
         {
             return await _userHubDbContext.Users.FirstOrDefaultAsync(p => p.Id == id);
         }

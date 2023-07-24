@@ -26,14 +26,14 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<User>>> GetUsersAsync()
     {
-        var users = await _userRepository.GetAll();
+        var users = await _userService.GetAllUsers();
         return Ok(users);
     }
 
     [HttpGet("{Id}", Name = "GetUserByIdAsync")]
     public async Task<ActionResult<User>> GetUserByIdAsync(Guid Id)
     {
-        var user = await _userRepository.GetUser(Id);
+        var user = await _userService.GetUserById(Id);
 
         if (user == null)
             return NotFound();
@@ -44,14 +44,14 @@ public class UserController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> CreateUserAsync([FromBody] User user) 
     {
-        await _userRepository.CreateUser(user);
-        return CreatedAtRoute(nameof(GetUserByIdAsync), new { Id = user.Id }, user);
+        var result = await _userService.CreateUser(user);
+        return CreatedAtRoute(nameof(GetUserByIdAsync), result);
     }
 
     [HttpPut("{Id}")]
     public async Task<ActionResult> UpdateUserAsync(Guid Id, UpdateUserDto updateUserDto)
     {
-        var user = await _userRepository.GetUser(Id);
+        var user = await _userService.GetUserById(Id);
 
         if (user == null)
         {
@@ -68,14 +68,14 @@ public class UserController : ControllerBase
     [HttpDelete("{Id}")]
     public async Task<ActionResult> DeleteUserAsync(Guid id)
     {
-        var user = await _userRepository.GetUser(id);
+        var user = await _userService.GetUserById(id);
 
         if (user == null)
         {
             return NotFound();
         }
 
-        _userRepository.DeleteUser(user);
+        _userService.RemoveUser(user);
         await _userRepository.SaveChangesAsync();
         return NoContent();
     }

@@ -7,8 +7,8 @@ namespace UserHub.Api.Data.Users
     {
         Task<IEnumerable<User>> GetAll();
         Task<User> GetUser(Guid id);
-        Task<bool> CreateUser(User user);
-        bool DeleteUser(User user);
+        Task<User> CreateUser(User user);
+        Task DeleteUser(User user);
         Task SaveChangesAsync();
     }
 }

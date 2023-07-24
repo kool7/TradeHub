@@ -57,7 +57,7 @@ namespace UserHub.UnitTests.Repositories
             // Arrange
             var user = _fixture.Create<User>();
             var mockDbSet = new Mock<DbSet<User>>();
-            _userHubDbContext.Setup(s => s.Users).Returns(mockDbSet.Object);
+            _userHubDbContext.Setup(s => s.Set<User>()).Returns(mockDbSet.Object);
 
             // Act
             var result = await _userRepository.GetUser(user.Id);
@@ -77,7 +77,7 @@ namespace UserHub.UnitTests.Repositories
             var result = await _userRepository.CreateUser(user);
 
             // Assert
-            result.Should().Be(true);
+            result.Should().BeEquivalentTo(user);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace UserHub.UnitTests.Repositories
             var result = _userRepository.DeleteUser(user);
 
             // Assert
-            result.Should().BeTrue();
+            _userHubDbContext.Verify(db => db.Remove(user), Times.Once);
         }
     }
 }
