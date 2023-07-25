@@ -12,20 +12,20 @@ namespace UserHub.UnitTests.Controllers
     public class UserControllerTests
     {
         private readonly Fixture _fixture;
-        private readonly Mock<ILogger<UserController>> _mockLogger;
+        private readonly Mock<ILogger<MockUserController>> _mockLogger;
         private readonly Mock<IUserService> _mockUserService;
-        private readonly UserController _sutuserController;
+        private readonly MockUserController _sutuserController;
 
         public UserControllerTests()
         {
             _fixture = new Fixture();
-            _mockLogger = new Mock<ILogger<UserController>>();
+            _mockLogger = new Mock<ILogger<MockUserController>>();
             _mockUserService = new Mock<IUserService>();
-            _sutuserController = new UserController(_mockLogger.Object, _mockUserService.Object);
+            _sutuserController = new MockUserController(_mockLogger.Object, _mockUserService.Object);
         }
 
         [Fact]
-        public async Task GetUsersAsync_ListOfUsers_ReturnsOkStatus()
+        public async Task GetMockUsersAsync_ListOfUsers_ReturnsOkStatus()
         {
             // Arrange
             var expectedUsers = _fixture.CreateMany<User>();
@@ -33,7 +33,7 @@ namespace UserHub.UnitTests.Controllers
                 .ReturnsAsync(expectedUsers);
 
             // Act
-            var result = await _sutuserController.GetUsersAsync();
+            var result = await _sutuserController.GetMockUsersAsync();
 
             // Assert
             result.Should().NotBeNull();
@@ -42,7 +42,7 @@ namespace UserHub.UnitTests.Controllers
         }
 
         [Fact]
-        public async Task GetUsersAsync_WhenNoUsersFound_ReturnsEmptyList()
+        public async Task GetMockUsersAsync_WhenNoUsersFound_ReturnsEmptyList()
         {
             // Arrange
             var expectedEmptyUsers = new List<User>();
@@ -50,7 +50,7 @@ namespace UserHub.UnitTests.Controllers
                 .ReturnsAsync(expectedEmptyUsers);
 
             // Act
-            var result = await _sutuserController.GetUsersAsync();
+            var result = await _sutuserController.GetMockUsersAsync();
 
             // Assert
             result.Value.Should().BeNullOrEmpty();
@@ -69,7 +69,7 @@ namespace UserHub.UnitTests.Controllers
                 .ReturnsAsync(user);
 
             // Act
-            var result = await _sutuserController.GetUserByIdAsync(userId);
+            var result = await _sutuserController.GetMockUserByIdAsync(userId);
 
             // Assert
             result.Result.Should().BeOfType<OkObjectResult>();
@@ -87,7 +87,7 @@ namespace UserHub.UnitTests.Controllers
                 .ReturnsAsync((User)null!);
 
             // Act
-            var result = await _sutuserController.GetUserByIdAsync(userId);
+            var result = await _sutuserController.GetMockUserByIdAsync(userId);
 
             // Assert
             result.Result.Should().BeOfType<NotFoundResult>();
@@ -100,7 +100,7 @@ namespace UserHub.UnitTests.Controllers
             var user = _fixture.Create<User>();
             _mockUserService
                 .Setup(service => service.CreateUser(user))
-                .ReturnsAsync(true);
+                .ReturnsAsync(user);
 
             // Act
             var result = await _sutuserController.CreateUserAsync(user);
@@ -111,7 +111,7 @@ namespace UserHub.UnitTests.Controllers
 
             var createdAtRouteResult = (CreatedAtRouteResult)result.Result!;
             createdAtRouteResult?.StatusCode.Should().Be(201);
-            createdAtRouteResult?.RouteName.Should().BeEquivalentTo("GetUserByIdAsync");
+            createdAtRouteResult?.RouteName.Should().BeEquivalentTo("GetMockUserByIdAsync");
             createdAtRouteResult?.RouteValues!["Id"].Should().BeEquivalentTo(user.Id);
         }
 

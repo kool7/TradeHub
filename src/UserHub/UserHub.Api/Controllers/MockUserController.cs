@@ -7,31 +7,29 @@ namespace UserHub.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : ControllerBase
+public class MockUserController : ControllerBase
 {
     private readonly IUserService _userService;
-    private readonly IUserRepository _userRepository;
-    private readonly ILogger<UserController> _logger;
+    private readonly ILogger<MockUserController> _logger;
 
-    public UserController(
-        ILogger<UserController> logger,
-        IUserService userService,
-        IUserRepository userRepository)
+    public MockUserController(
+        ILogger<MockUserController> logger,
+        IUserService userService)
     {
         _logger = logger;
         _userService = userService;
-        _userRepository = userRepository;
     }
 
+    // Mock Repo
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<User>>> GetUsersAsync()
+    public async Task<ActionResult<IEnumerable<User>>> GetMockUsersAsync()
     {
         var users = await _userService.GetAllUsers();
         return Ok(users);
     }
 
-    [HttpGet("{Id}", Name = "GetUserByIdAsync")]
-    public async Task<ActionResult<User>> GetUserByIdAsync(Guid Id)
+    [HttpGet("{Id}", Name = "GetMockUserByIdAsync")]
+    public async Task<ActionResult<User>> GetMockUserByIdAsync(Guid Id)
     {
         var user = await _userService.GetUserById(Id);
 
@@ -42,10 +40,10 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<User>> CreateUserAsync([FromBody] User user) 
+    public async Task<ActionResult<User>> CreateUserAsync(User user) 
     {
         var result = await _userService.CreateUser(user);
-        return CreatedAtRoute(nameof(GetUserByIdAsync), result);
+        return CreatedAtRoute(nameof(GetMockUserByIdAsync), new { Id = result.Id }, result);
     }
 
     [HttpPut("{Id}")]
@@ -60,12 +58,11 @@ public class UserController : ControllerBase
 
         user.FirstName = updateUserDto.FirstName;
         user.LastName = updateUserDto.LastName;
-        await _userRepository.SaveChangesAsync();
 
         return NoContent();
     }
 
-    [HttpDelete("{Id}")]
+    [HttpDelete]
     public async Task<ActionResult> DeleteUserAsync(Guid id)
     {
         var user = await _userService.GetUserById(id);
@@ -76,7 +73,6 @@ public class UserController : ControllerBase
         }
 
         _userService.RemoveUser(user);
-        await _userRepository.SaveChangesAsync();
         return NoContent();
     }
 }

@@ -88,37 +88,37 @@ public class UserServiceTests
     }
 
     [Fact]
-    public async Task CreateUser_UserCreated_ReturnsTrue()
+    public async Task CreateUser_UserCreated_ReturnsUser()
     {
         // Arrange
+        var newUser = _fixture.Create<User>();
         _mockUserRepository
             .Setup(repo => repo.CreateUser(It.IsAny<User>()))
-            .ReturnsAsync(true);
+            .ReturnsAsync(newUser);
 
-        var newUser = _fixture.Create<User>();
 
         // Act
         var result = await _sutUserService.CreateUser(newUser);
 
         // Assert
-        result.Should().BeTrue();
+        result.Should().BeEquivalentTo(newUser);
     }
 
     [Fact]
-    public async Task CreateUser_UserNotCreated_ReturnsFalse()
+    public async Task CreateUser_UserNotCreated_ReturnsEmpty()
     {
         // Arrange
+        var newUser = (User)null!;
         _mockUserRepository
             .Setup(repo => repo.CreateUser(It.IsAny<User>()))
-            .ReturnsAsync(false);
+            .ReturnsAsync(newUser);
 
-        var newUser = (User)null!;
 
         // Act
         var result = await _sutUserService.CreateUser(newUser);
 
         // Assert
-        result.Should().BeFalse();
+        result.Should().Be(newUser);
     }
 
     [Fact]

@@ -1,14 +1,20 @@
-﻿using UserHub.Api.Contracts.Users;
-using UserHub.Api.Domain;
+﻿using UserHub.Api.Domain;
 
 namespace UserHub.Api.Data.Users
 {
     public class UserRepository : IUserRepository
     {
         private static List<User> _users = new();
+        private readonly UserHubDbContext _userHubDbContext;
+
+        public UserRepository(UserHubDbContext userHubDbContext)
+        {
+            _userHubDbContext = userHubDbContext;
+        }
 
         public async Task<IEnumerable<User>> GetAll()
         {
+            //return await _userHubDbContext.Users.ToListAsync();
             return await Task.FromResult(_users);
         }
 
@@ -17,21 +23,25 @@ namespace UserHub.Api.Data.Users
             return await Task.FromResult(_users.FirstOrDefault(user => user.Id == id)!);
         }
 
-        public Task<bool> CreateUser(User user)
+        public async Task<User?> CreateUser(User user)
         {
             if (user != null)
             {
                 user.Id = Guid.NewGuid();
                 _users.Add(user);
-                return Task.FromResult(true);
             }
 
-            return Task.FromResult(false);
+            return await Task.FromResult(user);
         }
 
-        public bool DeleteUser(User user)
+        public async Task DeleteUser(User user)
         {
-            return _users.Remove(user);
+            await Task.FromResult(_users.Remove(user));
+        }
+
+        public Task SaveChangesAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
